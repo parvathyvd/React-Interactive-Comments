@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import Replies from "./Replies";
 
 const Comments = ({
@@ -13,16 +13,17 @@ const Comments = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isEditId, setIsEditId] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [deleteId, setDeleteId] =useState(null);
+  const [deleteId, setDeleteId] = useState(null);
+  const [btnUpDisabled, setBtnUpDisabled] = useState(false);
+  const [btnDownDisabled, setBtnDownDisabled] = useState(false);
   let [score, setScore] = useState(comment.score);
-
 
   const onClickReplyHandler = (id) => {
     setShowReply(true);
   };
 
   const onClickSendHandler = (id, commentSelected) => {
-    //remove the showreply false 
+    //remove the showreply false
     let newReply = {
       id: new Date().getTime().toString(),
       content: `${contentValue}`,
@@ -36,8 +37,8 @@ const Comments = ({
         username: `${currentUser.username}`,
       },
     };
-    if(!contentValue){
-        return
+    if (!contentValue) {
+      return;
     }
 
     if (!isEditing) {
@@ -74,37 +75,71 @@ const Comments = ({
   const onDeleteHandler = (id) => {
     console.log("id to be deleted,", id);
     setShowModal(true);
-    setDeleteId(id)
-    
+    setDeleteId(id);
   };
 
-  const onClickModalDelete = () =>{
+  const onClickModalDelete = () => {
     const filteredComments = replies.filter((item) => item.id !== deleteId);
     console.log(filteredComments);
     setReplies([...filteredComments]);
     setShowModal(false);
-    setDeleteId(null)
-  }
+    setDeleteId(null);
+  };
 
-  const onClickModalCancel = () =>{
+  const onClickModalCancel = () => {
     setShowModal(false);
-  }
-  const onPlusBtnHandler = () => {
-    setScore(score + 1)
-  }
-  const onMinusBtnHandler = () => {
-   setScore(score - 1);  
-}
+  };
 
+  let starterScore = comment.score;
+
+  const onPlusBtnHandler = () => {
+    setScore((prevScore) => prevScore + 1);
+    if (score - starterScore < 1) {
+      setBtnUpDisabled(true);
+      starterScore = comment.score;
+    }
+    console.log("disabled is in the +", btnUpDisabled);
+    console.log("starter score", starterScore, "score is", score);
+  };
+  const onMinusBtnHandler = () => {
+    setScore((prevScore) => prevScore - 1);
+    if (starterScore - score < 1) {
+      setBtnDownDisabled(true);
+      starterScore = comment.score;
+    }
+    console.log("disabled is in the -", btnDownDisabled);
+    console.log("starter score", starterScore, "score is", score);
+  };
 
   return (
     <>
       <div className="comments" key={comment.id}>
-      <div className="vote">
-                <img className='icon-plus' src="./images/icon-plus.svg" alt="icon-plus" onClick={onPlusBtnHandler}/>   
-                    <span className='vote__num'>{score}</span>             
-                <img  className='icon-minus' src="./images/icon-minus.svg" alt="icon-minus" onClick={onMinusBtnHandler} />
-            </div>
+        <div className="vote">
+          <button
+            type="button"
+            className="btn-vote"
+            disabled={btnUpDisabled}
+            onClick={onPlusBtnHandler}
+          >
+            <img
+              className="icon-plus"
+              src="./images/icon-plus.svg"
+              alt="icon-plus"
+            />
+          </button>
+          <span className="vote__num">{score}</span>
+          <button
+            className="btn-vote"
+            onClick={onMinusBtnHandler}
+            disabled={btnDownDisabled}
+          >
+            <img
+              className="icon-minus"
+              src="./images/icon-minus.svg"
+              alt="icon-minus"
+            />
+          </button>
+        </div>
         <div className="user__profile">
           <div className="user__info">
             <div className="user-details">
@@ -114,22 +149,21 @@ const Comments = ({
                 alt={comment.user.username}
               />
               <h4>{comment.user.username}</h4>
-              {currentUser.username === comment.user.username &&
-                <h4 className='you-text'>You</h4>
-                }
+              {currentUser.username === comment.user.username && (
+                <h4 className="you-text">You</h4>
+              )}
               <p>{comment.createdAt}</p>
             </div>
             <div className="user__btns">
               {currentUser.username === comment.user.username ? (
                 <div className="change-btns">
-                <span onClick={() => onCommentDeleteHandler(comment.id)}>
+                  <span onClick={() => onCommentDeleteHandler(comment.id)}>
                     <img src="./images/icon-delete.svg" alt="icon-edit" />{" "}
                     Delete
                   </span>
                   <span onClick={() => onCommentEditHandler(comment.id)}>
                     <img src="./images/icon-edit.svg" alt="icon-edit" /> Edit
                   </span>
-                
                 </div>
               ) : (
                 <div
@@ -170,7 +204,7 @@ const Comments = ({
             className="btn btn-send"
             onClick={() => onClickSendHandler(comment.id, comment)}
           >
-            {isEditing ? 'UPDATE' : 'SEND' }
+            {isEditing ? "UPDATE" : "SEND"}
           </button>
         </div>
       )}
