@@ -17,6 +17,8 @@ const Replies = ({
     `@${reply.user.username}`
   );
   let [score, setScore] = useState(reply.score);
+  const [btnUpDisabled, setBtnUpDisabled] = useState(false);
+  const [btnDownDisabled, setBtnDownDisabled] = useState(false);
 
   const onClickReplyHandler = (id) => {
     //show the reply block
@@ -42,30 +44,55 @@ const Replies = ({
     setReplies([...replies, newReply]);
     setShowInnerReply(false);
   };
+  let starterScore = reply.score;
+
   const onPlusBtnHandler = () => {
-    setScore(score + 1);
+    setScore((prevScore) => prevScore + 1);
+    if (score - starterScore < 1) {
+      setBtnUpDisabled(true);
+      starterScore = reply.score;
+    }
+    console.log("disabled is in the +", btnUpDisabled);
+    console.log("starter score", starterScore, "score is", score);
   };
   const onMinusBtnHandler = () => {
-    setScore(score - 1);
+    setScore((prevScore) => prevScore - 1);
+    if (starterScore - score < 1) {
+      setBtnDownDisabled(true);
+      starterScore = reply.score;
+    }
+    console.log("disabled is in the -", btnDownDisabled);
+    console.log("starter score", starterScore, "score is", score);
   };
 
   return (
     <>
       <div className="comments">
         <div className="vote">
-          <img
-            className="icon-plus"
-            src="./images/icon-plus.svg"
-            alt="icon-plus"
+          <button
+            type="button"
+            className="btn-vote"
+            disabled={btnUpDisabled}
             onClick={onPlusBtnHandler}
-          />
+          >
+            <img
+              className="icon-plus"
+              src="./images/icon-plus.svg"
+              alt="icon-plus"
+            />
+          </button>
           <span className="vote__num">{score}</span>
-          <img
-            className="icon-minus"
-            src="./images/icon-minus.svg"
-            alt="icon-minus"
+          <button
+            className="btn-vote"
             onClick={onMinusBtnHandler}
-          />
+            disabled={btnDownDisabled}
+          >
+            <img
+              className="icon-minus"
+              src="./images/icon-minus.svg"
+              alt="icon-minus"
+            />
+          </button>
         </div>
         <div className="user__profile">
           <div className="user__info">

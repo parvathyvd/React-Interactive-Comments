@@ -198,6 +198,10 @@ textarea{
     font-size: 1rem;
     font-family: 'Rubik', sans-serif;
 }
+.btn-vote{
+    outline: none;
+    border: none;
+}
 
 
 @media screen and (max-width: 700px){
